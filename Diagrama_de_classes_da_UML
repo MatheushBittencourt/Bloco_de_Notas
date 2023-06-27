@@ -1,0 +1,20 @@
++--------------------------------+
+|          BlocoDeNotas          |
++--------------------------------+
+| - scanner: Scanner             |
++--------------------------------+
+| + main(args: String[]): void   |
+| - criarNovoArquivo(): void     |
+| - abrirArquivoExistente(): void|
++--------------------------------+
+
++-----------------------------------------+
+|       Arquivo                           |
++-----------------------------------------+
+| - nome: String                          |
++-----------------------------------------+
+| + Arquivo(nome: String)                 |
+| + criarArquivo(): boolean               |
+| + salvarConteudo(conteudo: String): void|
+| + lerConteudo(): String                 |
++-----------------------------------------+
