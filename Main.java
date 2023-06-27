@@ -10,92 +10,133 @@ public class BlocoDeNotas {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Bem-vindo ao Bloco de Notas!");
-        System.out.println("Selecione uma opção:");
-        System.out.println("1 - Criar novo arquivo");
-        System.out.println("2 - Abrir arquivo existente");
         
-        int opcao = scanner.nextInt();
+        while (true) {
+            exibirMenu();
+            int opcao = scanner.nextInt();
+            
+            switch (opcao) {
+                case 1:
+                    adicionarNota(scanner);
+                    break;
+                case 2:
+                    editarNota(scanner);
+                    break;
+                case 3:
+                    excluirNota(scanner);
+                    break;
+                case 4:
+                    exibirNotas();
+                    break;
+                case 5:
+                    System.out.println("Saindo do bloco de notas...");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+    }
+    
+    private static void exibirMenu() {
+        System.out.println("====== Bloco de Notas ======");
+        System.out.println("1. Adicionar nota");
+        System.out.println("2. Editar nota");
+        System.out.println("3. Excluir nota");
+        System.out.println("4. Exibir notas");
+        System.out.println("5. Sair");
+        System.out.print("Escolha uma opção: ");
+    }
+    
+    private static void adicionarNota(Scanner scanner) {
+        scanner.nextLine(); // Limpa o buffer do scanner
         
-        switch (opcao) {
-            case 1:
-                criarNovoArquivo();
-                break;
-            case 2:
-                abrirArquivoExistente();
-                break;
-            default:
-                System.out.println("Opção inválida. O programa será encerrado.");
+        System.out.print("Digite o nome do arquivo: ");
+        String nomeArquivo = scanner.nextLine();
+        
+        System.out.println("Digite o conteúdo da nota (pressione Enter para finalizar):");
+        StringBuilder conteudo = new StringBuilder();
+        String linha;
+        while (!(linha = scanner.nextLine()).isEmpty()) {
+            conteudo.append(linha).append("\n");
         }
         
-        scanner.close();
-    }
-
-    public static void criarNovoArquivo() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Digite o nome do arquivo: ");
-        String nomeArquivo = scanner.nextLine();
-
-        try {
-            File arquivo = new File(nomeArquivo);
-            
-            if (arquivo.createNewFile()) {
-                System.out.println("Arquivo criado com sucesso!");
-            } else {
-                System.out.println("O arquivo já existe.");
-            }
-            
-            System.out.println("Digite o conteúdo do arquivo ('fim' para encerrar): ");
-            String conteudo = scanner.nextLine();
-            
-            FileWriter fileWriter = new FileWriter(arquivo);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            
-            while (!conteudo.equals("fim")) {
-                bufferedWriter.write(conteudo);
-                bufferedWriter.newLine();
-                conteudo = scanner.nextLine();
-            }
-            
-            bufferedWriter.close();
-            System.out.println("Conteúdo do arquivo salvo.");
-            
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo))) {
+            writer.write(conteudo.toString());
+            System.out.println("Nota adicionada com sucesso!");
         } catch (IOException e) {
-            System.out.println("Ocorreu um erro ao criar o arquivo.");
-            e.printStackTrace();
+            System.out.println("Erro ao adicionar a nota: " + e.getMessage());
+        }
+    }
+    
+    private static void editarNota(Scanner scanner) {
+        scanner.nextLine(); // Limpa o buffer do scanner
+        
+        System.out.print("Digite o nome do arquivo que deseja editar: ");
+        String nomeArquivo = scanner.nextLine();
+        
+        if (!verificarArquivoExiste(nomeArquivo)) {
+            System.out.println("O arquivo não existe.");
+            return;
         }
         
-        scanner.close();
+        System.out.println("Digite o novo conteúdo da nota (pressione Enter para finalizar):");
+        StringBuilder conteudo = new StringBuilder();
+        String linha;
+        while (!(linha = scanner.nextLine()).isEmpty()) {
+            conteudo.append(linha).append("\n");
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo))) {
+            writer.write(conteudo.toString());
+            System.out.println("Nota editada com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao editar a nota: " + e.getMessage());
+        }
     }
-
-    public static void abrirArquivoExistente() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Digite o nome do arquivo: ");
+    
+    private static void excluirNota(Scanner scanner) {
+        scanner.nextLine(); // Limpa o buffer do scanner
+        
+        System.out.print("Digite o nome do arquivo que deseja excluir: ");
         String nomeArquivo = scanner.nextLine();
-
+        
+        if (!verificarArquivoExiste(nomeArquivo)) {
+            System.out.println("O arquivo não existe.");
+            return;
+        }
+        
         try {
             File arquivo = new File(nomeArquivo);
-            
-            if (arquivo.exists()) {
-                FileReader fileReader = new FileReader(arquivo);
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-                
-                String linha;
-                while ((linha = bufferedReader.readLine()) != null) {
-                    System.out.println(linha);
+            if (arquivo.delete()) {
+                System.out.println("Nota excluída com sucesso!");
+            } else {
+                System.out.println("Erro ao excluir a nota.");
+            }
+        } catch (SecurityException e) {
+            System.out.println("Erro ao excluir a nota: " + e.getMessage());
+        }
+    }
+    
+    private static void exibirNotas() {
+        System.out.println("====== Lista de Notas ======");
+        File diretorio = new File(".");
+        File[] arquivos = diretorio.listFiles();
+        if (arquivos != null) {
+            int contador = 1;
+            for (File arquivo : arquivos) {
+                if (arquivo.isFile()) {
+                    System.out.println(contador + ". " + arquivo.getName());
+                    contador++;
                 }
-                
-                bufferedReader.close();
-                
-            } else {
-                System.out.println("O arquivo não existe.");
             }
-            
-        } catch (IOException e) {
-            System.out.println("Ocorreu um erro ao abrir o arquivo.");
-            e.printStackTrace();
         }
-        
-        scanner.close();
+        System.out.println("============================");
+    }
+    
+    private static boolean verificarArquivoExiste(String nomeArquivo) {
+        File arquivo = new File(nomeArquivo);
+        return arquivo.exists() && arquivo.isFile();
     }
 }
