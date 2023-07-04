@@ -1,7 +1,0 @@
-Neste diagrama, temos três classes principais:
-
-    Diario: Representa o diário pessoal. Possui uma lista de notas (notas) e métodos para adicionar, editar, excluir, exibir e salvar notas.
-    Nota: Representa uma nota no diário. Possui os atributos titulo e conteudo, bem como métodos para obter e definir esses valores.
-    DiarioPessoal: Classe principal que contém o método main. É responsável por criar uma instância do Diario e controlar a interação com o usuário por meio do menu.
-
-As relações entre as classes são representadas por setas. A classe Diario possui uma relação de composição com a classe Nota, indicando que um diário é composto por várias notas. A classe DiarioPessoal tem uma associação com a classe Diario, pois precisa interagir com o diário para executar as ações do menu.
